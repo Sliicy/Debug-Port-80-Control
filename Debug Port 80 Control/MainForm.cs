@@ -20,17 +20,15 @@ namespace Debug_Port_80_Control {
         }
 
         // OpenLibSystem object used for read/writing to debug port:
-        Ols ols;
+        private Ols ols;
 
         private int cachedVolumeLevel = 0;
 
-        private bool IsAdmin()
+        private static bool IsAdmin()
         {
             OperatingSystem osInfo = Environment.OSVersion;
             if (osInfo.Platform == PlatformID.Win32Windows)
-            {
                 return true;
-            }
             else
             {
                 WindowsIdentity usrId = WindowsIdentity.GetCurrent();
@@ -39,23 +37,21 @@ namespace Debug_Port_80_Control {
             }
         }
 
-        private bool RunAsRestart()
+        private static bool RunAsRestart()
         {
             string[] args = Environment.GetCommandLineArgs();
 
             foreach (string s in args)
-            {
                 if (s.Equals("runas"))
-                {
                     return false;
-                }
-            }
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.UseShellExecute = true;
-            startInfo.WorkingDirectory = Environment.CurrentDirectory;
-            startInfo.FileName = Application.ExecutablePath;
-            startInfo.Verb = "runas";
-            startInfo.Arguments = "runas";
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                UseShellExecute = true,
+                WorkingDirectory = Environment.CurrentDirectory,
+                FileName = Application.ExecutablePath,
+                Verb = "runas",
+                Arguments = "runas"
+            };
 
             try
             {
@@ -75,6 +71,7 @@ namespace Debug_Port_80_Control {
                 Environment.Exit(0);
             }
             Init();
+            cbEffect.SelectedIndex = 0;
         }
 
         private void Init()
@@ -143,7 +140,7 @@ namespace Debug_Port_80_Control {
             ols.WriteIoPortWord(0x80, ushort.Parse(txtInput.Text));
         }
 
-        private void tmrNumberLoop_Tick(object sender, EventArgs e)
+        private void TmrNumberLoop_Tick(object sender, EventArgs e)
         {
             ols.WriteIoPortWord(0x80, 0x01);
             System.Threading.Thread.Sleep(700);
@@ -168,7 +165,7 @@ namespace Debug_Port_80_Control {
         }
 
         // https://stackoverflow.com/questions/2534595/get-master-sound-volume-in-c-sharp
-        private int GetCurrentSpeakerVolume()
+        private static int GetCurrentSpeakerVolume()
         {
             int volume = 0;
             var enumerator = new MMDeviceEnumerator();
@@ -229,9 +226,9 @@ namespace Debug_Port_80_Control {
             cachedVolumeLevel = GetCurrentSpeakerVolume();
         }
 
-        private void CboOption_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbEffect_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cboOption.Text == "Volume")
+            if (cbEffect.Text == "Volume")
             {
                 tmrVolume.Start();
             } else
