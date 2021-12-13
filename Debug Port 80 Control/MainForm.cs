@@ -229,12 +229,9 @@ namespace Debug_Port_80_Control {
         private void CbEffect_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cbEffect.Text == "Volume")
-            {
                 tmrVolume.Start();
-            } else
-            {
+            else
                 tmrVolume.Stop();
-            }
         }
     }
 }
